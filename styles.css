@@ -212,7 +212,7 @@ footer{background:var(--ink);color:var(--paper);padding:60px 0 28px}
   clip-path: var(--clip);
 }
 .intro-overlay.gone{opacity:0;transition:opacity .4s ease}
-.squeegee{position:absolute;top:0;bottom:0;width:160px;left:-180px;z-index:10000;pointer-events:none}
+.squeegee{position:absolute;top:0;bottom:0;width:160px;left:0;z-index:10000;pointer-events:none}
 .squeegee-handle{position:absolute;top:50%;left:0;width:90px;height:18px;background:linear-gradient(180deg,#1a3a52,#0e2433);border-radius:8px;transform:translateY(-50%) rotate(-12deg);transform-origin:right center;box-shadow:0 4px 8px rgba(0,0,0,.3)}
 .squeegee-head{position:absolute;top:0;bottom:0;right:30px;width:14px;background:linear-gradient(90deg,#0e2433,#1a3a52 50%, #0e2433);border-radius:4px;box-shadow:-4px 0 12px rgba(0,0,0,.2)}
 .squeegee-blade{position:absolute;top:0;bottom:0;right:24px;width:6px;background:linear-gradient(90deg, rgba(255,255,255,.6), rgba(180,210,230,.85));border-radius:0 3px 3px 0;box-shadow:0 0 8px rgba(255,255,255,.6)}
