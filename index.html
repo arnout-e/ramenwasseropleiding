@@ -604,64 +604,25 @@
  // show skip button after a moment
  setTimeout(()=> skip.classList.add('show'), 400);
 
- const totalMs = 2400;
- const extra = 300;
+ const totalMs = 2000;
  let raf, t0 = null, done = false;
 
- // Bezier control points: top-right → swing along right edge → bottom-left
- const W0 = window.innerWidth, H0 = window.innerHeight;
- const P0 = [W0 + extra, -extra];
- const P1 = [W0 + extra, H0 + extra];
- const P2 = [-extra,     H0 + extra];
-
  function easeInOutCubic(x){ return x<.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2; }
-
- function bezier(t){
-   const u = 1 - t;
-   return {
-     bx: u*u*P0[0] + 2*u*t*P1[0] + t*t*P2[0],
-     by: u*u*P0[1] + 2*u*t*P1[1] + t*t*P2[1],
-     tx: 2*(1-t)*(P1[0]-P0[0]) + 2*t*(P2[0]-P1[0]),
-     ty: 2*(1-t)*(P1[1]-P0[1]) + 2*t*(P2[1]-P1[1])
-   };
- }
-
- // Dirty area = everything still ahead of the squeegee (in motion direction)
- function getDirtyClip(bx, by, tx, ty){
-   const W = window.innerWidth, H = window.innerHeight;
-   const corners = [[0,0],[W,0],[W,H],[0,H]];
-   const inDirty = corners.map(([x,y]) => tx*(x-bx) + ty*(y-by) > 0);
-   if(inDirty.every(v=>v))  return `polygon(0px 0px,${W}px 0px,${W}px ${H}px,0px ${H}px)`;
-   if(inDirty.every(v=>!v)) return 'none';
-   let poly = [];
-   for(let i=0;i<4;i++){
-     if(inDirty[i]) poly.push(corners[i]);
-     const j=(i+1)%4;
-     const [x1,y1]=corners[i],[x2,y2]=corners[j];
-     const d1=tx*(x1-bx)+ty*(y1-by), d2=tx*(x2-bx)+ty*(y2-by);
-     if((d1>0)!==(d2>0)){
-       const t2=d1/(d1-d2);
-       poly.push([x1+t2*(x2-x1), y1+t2*(y2-y1)]);
-     }
-   }
-   return 'polygon('+poly.map(([x,y])=>`${x.toFixed(1)}px ${y.toFixed(1)}px`).join(',')+')';
- }
 
  function step(ts){
    if(done) return;
    if(t0 === null) t0 = ts;
    const p = Math.min(1, (ts - t0) / totalMs);
    const e = easeInOutCubic(p);
-   const {bx, by, tx, ty} = bezier(e);
-
-   // Rotate image so its blade (image top) faces the direction of motion
-   const angle = Math.atan2(-tx, -ty) * 180 / Math.PI;
-   const hw = (squeegee.offsetWidth  || 340) / 2;
-   const hh = (squeegee.offsetHeight || 230) / 2;
-   squeegee.style.transform = `translate(${(bx-hw).toFixed(1)}px,${(by-hh).toFixed(1)}px) rotate(${angle.toFixed(1)}deg)`;
+   const W = window.innerWidth;
+   const imgW = squeegee.offsetWidth || Math.round(window.innerHeight * 1.4);
+   // start fully off-screen left, end fully off-screen right
+   const x = -imgW + (W + imgW * 2) * e;
+   squeegee.style.transform = `translateX(${x.toFixed(1)}px)`;
    squeegee.style.opacity = '1';
-
-   overlay.style.setProperty('--clip', getDirtyClip(bx, by, tx, ty));
+   // clip dirty overlay up to the right edge of the image (the leading edge)
+   const pct = Math.max(0, Math.min(100, (x + imgW) / W * 100));
+   overlay.style.setProperty('--clip', `inset(0 0 0 ${pct.toFixed(2)}%)`);
    overlay.classList.add('cleaning');
    if(p < 1) raf = requestAnimationFrame(step);
    else finish();
