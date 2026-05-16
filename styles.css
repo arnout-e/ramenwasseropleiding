@@ -213,7 +213,7 @@ footer{background:var(--ink);color:var(--paper);padding:60px 0 28px}
 }
 .intro-overlay.gone{opacity:0;transition:opacity .4s ease}
 .squeegee{position:absolute;top:0;left:0;height:100%;z-index:10000;pointer-events:none;opacity:0}
-.squeegee-img{height:100%;width:auto;display:block;filter:drop-shadow(-6px 0 20px rgba(0,0,0,.5))}
+.squeegee-img{height:100%;width:auto;display:block;transform:rotate(-90deg);transform-origin:center center;filter:drop-shadow(-6px 0 20px rgba(0,0,0,.5))}
 
 /* Skip button */
 .skip-intro{position:fixed;bottom:24px;right:24px;z-index:10001;background:rgba(14,36,51,.85);color:var(--paper);padding:8px 14px;border-radius:999px;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.08em;cursor:pointer;opacity:0;transition:opacity .3s;border:1px solid rgba(255,255,255,.15)}
