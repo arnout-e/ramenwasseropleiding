@@ -615,13 +615,24 @@
    const p = Math.min(1, (ts - t0) / totalMs);
    const e = easeInOutCubic(p);
    const W = window.innerWidth;
-   const imgW = squeegee.offsetWidth || Math.round(window.innerHeight * 1.4);
-   // start fully off-screen left, end fully off-screen right
-   const x = -imgW + (W + imgW * 2) * e;
+   const H = window.innerHeight;
+   const imgW = squeegee.offsetWidth  || Math.round(H * 1.4); // layout width (unrotated)
+   // After rotate(-90deg), visual width = imgH = H, visual height = imgW
+   // Blade (image top) is at visual LEFT edge of element
+   // Visual left edge of element = x + (imgW - H) / 2
+   const bladeOff = (imgW - H) / 2;
+   // Handle enters screen first (visual right = screen left at e=0)
+   // visual right = x + (imgW + H) / 2 = 0  →  x = -(imgW + H) / 2
+   const startX = -(imgW + H) / 2;
+   // Blade exits screen last (visual left = W at e=1)
+   // x + bladeOff = W  →  x = W - bladeOff
+   const endX = W - bladeOff;
+   const x = startX + (endX - startX) * e;
    squeegee.style.transform = `translateX(${x.toFixed(1)}px)`;
    squeegee.style.opacity = '1';
-   // clip dirty overlay up to the right edge of the image (the leading edge)
-   const pct = Math.max(0, Math.min(100, (x + imgW) / W * 100));
+   // Clip: dirty overlay = right of blade
+   const blade_x = x + bladeOff;
+   const pct = Math.max(0, Math.min(100, blade_x / W * 100));
    overlay.style.setProperty('--clip', `inset(0 0 0 ${pct.toFixed(2)}%)`);
    overlay.classList.add('cleaning');
    if(p < 1) raf = requestAnimationFrame(step);
