@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- yellow background circle -->
+  <circle cx="24" cy="24" r="24" fill="#FFC93C"/>
+  <!-- window frame -->
+  <rect x="9" y="10" width="30" height="26" rx="3" fill="#FFFBF2" stroke="#0E2433" stroke-width="2.5"/>
+  <!-- window cross -->
+  <line x1="24" y1="11" x2="24" y2="35" stroke="#0E2433" stroke-width="2"/>
+  <line x1="10" y1="23" x2="38" y2="23" stroke="#0E2433" stroke-width="2"/>
+  <!-- water droplets -->
+  <circle cx="15" cy="17" r="1.6" fill="#3FB4E5"/>
+  <circle cx="32" cy="29" r="1.4" fill="#3FB4E5"/>
+  <!-- squeegee streak -->
+  <path d="M 7 38 L 41 26" stroke="#FF6B57" stroke-width="3" stroke-linecap="round"/>
+</svg>
