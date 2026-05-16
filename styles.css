@@ -212,23 +212,8 @@ footer{background:var(--ink);color:var(--paper);padding:60px 0 28px}
   clip-path: var(--clip);
 }
 .intro-overlay.gone{opacity:0;transition:opacity .4s ease}
-.squeegee{position:absolute;top:0;bottom:0;width:160px;left:0;z-index:10000;pointer-events:none}
-.squeegee-handle{position:absolute;top:50%;left:0;width:90px;height:18px;background:linear-gradient(180deg,#1a3a52,#0e2433);border-radius:8px;transform:translateY(-50%) rotate(-12deg);transform-origin:right center;box-shadow:0 4px 8px rgba(0,0,0,.3)}
-.squeegee-head{position:absolute;top:0;bottom:0;right:30px;width:14px;background:linear-gradient(90deg,#0e2433,#1a3a52 50%, #0e2433);border-radius:4px;box-shadow:-4px 0 12px rgba(0,0,0,.2)}
-.squeegee-blade{position:absolute;top:0;bottom:0;right:24px;width:6px;background:linear-gradient(90deg, rgba(255,255,255,.6), rgba(180,210,230,.85));border-radius:0 3px 3px 0;box-shadow:0 0 8px rgba(255,255,255,.6)}
-.squeegee-drips{position:absolute;top:0;bottom:0;right:60px;width:40px;pointer-events:none}
-.squeegee-drips::before,.squeegee-drips::after{
-  content:"";position:absolute;left:50%;width:6px;height:6px;border-radius:50%;
-  background:rgba(80,130,160,.5);
-  animation: drip 1.8s ease-in infinite;
-}
-.squeegee-drips::after{left:75%;animation-delay:.5s;width:4px;height:4px}
-
-@keyframes drip {
-  0%{transform:translateY(0);opacity:0}
-  20%{opacity:.6}
-  100%{transform:translateY(90vh);opacity:0}
-}
+.squeegee{position:absolute;top:0;left:0;width:340px;z-index:10000;pointer-events:none;opacity:0}
+.squeegee-img{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 20px rgba(0,0,0,.45))}
 
 /* Skip button */
 .skip-intro{position:fixed;bottom:24px;right:24px;z-index:10001;background:rgba(14,36,51,.85);color:var(--paper);padding:8px 14px;border-radius:999px;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.08em;cursor:pointer;opacity:0;transition:opacity .3s;border:1px solid rgba(255,255,255,.15)}

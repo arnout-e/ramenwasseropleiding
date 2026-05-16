@@ -42,10 +42,7 @@
  </svg>
  <div class="dirt"></div>
  <div class="squeegee" id="squeegee">
- <div class="squeegee-drips"></div>
- <div class="squeegee-handle"></div>
- <div class="squeegee-head"></div>
- <div class="squeegee-blade"></div>
+ <img src="assets/ruitentrekker.png" alt="" class="squeegee-img">
  </div>
 </div>
 <button class="skip-intro" id="skipIntro">Skip ›</button>
@@ -607,52 +604,67 @@
  // show skip button after a moment
  setTimeout(()=> skip.classList.add('show'), 400);
 
- const totalMs = 2200;
+ const totalMs = 2400;
  const extra = 300;
  let raf, t0 = null, done = false;
 
+ // Bezier control points: top-right → swing along right edge → bottom-left
+ const W0 = window.innerWidth, H0 = window.innerHeight;
+ const P0 = [W0 + extra, -extra];
+ const P1 = [W0 + extra, H0 + extra];
+ const P2 = [-extra,     H0 + extra];
+
  function easeInOutCubic(x){ return x<.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2; }
 
- // Compute the dirty (not yet cleaned) area as a clip polygon.
- // The squeegee sweeps from top-right to bottom-left.
- // Dirty area = lower-left of the blade line = where y - x > c.
- function getDirtyClip(bx, by) {
+ function bezier(t){
+   const u = 1 - t;
+   return {
+     bx: u*u*P0[0] + 2*u*t*P1[0] + t*t*P2[0],
+     by: u*u*P0[1] + 2*u*t*P1[1] + t*t*P2[1],
+     tx: 2*(1-t)*(P1[0]-P0[0]) + 2*t*(P2[0]-P1[0]),
+     ty: 2*(1-t)*(P1[1]-P0[1]) + 2*t*(P2[1]-P1[1])
+   };
+ }
+
+ // Dirty area = everything still ahead of the squeegee (in motion direction)
+ function getDirtyClip(bx, by, tx, ty){
    const W = window.innerWidth, H = window.innerHeight;
-   const c = by - bx;
    const corners = [[0,0],[W,0],[W,H],[0,H]];
-   const inDirty = corners.map(([x,y]) => (y - x) > c);
-   if(inDirty.every(v=>v)) return `polygon(0px 0px,${W}px 0px,${W}px ${H}px,0px ${H}px)`;
+   const inDirty = corners.map(([x,y]) => tx*(x-bx) + ty*(y-by) > 0);
+   if(inDirty.every(v=>v))  return `polygon(0px 0px,${W}px 0px,${W}px ${H}px,0px ${H}px)`;
    if(inDirty.every(v=>!v)) return 'none';
    let poly = [];
    for(let i=0;i<4;i++){
      if(inDirty[i]) poly.push(corners[i]);
      const j=(i+1)%4;
      const [x1,y1]=corners[i],[x2,y2]=corners[j];
-     const d1=(y1-x1)-c, d2=(y2-x2)-c;
+     const d1=tx*(x1-bx)+ty*(y1-by), d2=tx*(x2-bx)+ty*(y2-by);
      if((d1>0)!==(d2>0)){
-       const t=d1/(d1-d2);
-       poly.push([x1+t*(x2-x1), y1+t*(y2-y1)]);
+       const t2=d1/(d1-d2);
+       poly.push([x1+t2*(x2-x1), y1+t2*(y2-y1)]);
      }
    }
    return 'polygon('+poly.map(([x,y])=>`${x.toFixed(1)}px ${y.toFixed(1)}px`).join(',')+')';
  }
 
  function step(ts){
- if(done) return;
- if(t0 === null) t0 = ts;
- const p = Math.min(1, (ts - t0) / totalMs);
- const e = easeInOutCubic(p);
- const W = window.innerWidth, H = window.innerHeight;
- // Blade centre moves from (W+extra, -extra) to (-extra, H+extra)
- const bx = (W + extra) - (W + 2*extra) * e;
- const by = -extra + (H + 2*extra) * e;
- // Rotate squeegee 45° and position its centre at (bx, by)
- const angle = Math.atan2(W, H) * 180 / Math.PI;
- squeegee.style.transform = `translate(${(bx - 80).toFixed(1)}px, ${(by - H/2).toFixed(1)}px) rotate(${angle.toFixed(1)}deg)`;
- overlay.style.setProperty('--clip', getDirtyClip(bx, by));
- overlay.classList.add('cleaning');
- if(p < 1) raf = requestAnimationFrame(step);
- else finish();
+   if(done) return;
+   if(t0 === null) t0 = ts;
+   const p = Math.min(1, (ts - t0) / totalMs);
+   const e = easeInOutCubic(p);
+   const {bx, by, tx, ty} = bezier(e);
+
+   // Rotate image so its blade (image top) faces the direction of motion
+   const angle = Math.atan2(-tx, -ty) * 180 / Math.PI;
+   const hw = (squeegee.offsetWidth  || 340) / 2;
+   const hh = (squeegee.offsetHeight || 230) / 2;
+   squeegee.style.transform = `translate(${(bx-hw).toFixed(1)}px,${(by-hh).toFixed(1)}px) rotate(${angle.toFixed(1)}deg)`;
+   squeegee.style.opacity = '1';
+
+   overlay.style.setProperty('--clip', getDirtyClip(bx, by, tx, ty));
+   overlay.classList.add('cleaning');
+   if(p < 1) raf = requestAnimationFrame(step);
+   else finish();
  }
 
  function finish(){
