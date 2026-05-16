@@ -74,8 +74,10 @@ h1,h2,h3,h4{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:8
 .btn-ghost:hover{background:var(--ink);color:var(--paper)}
 
 .hero-meta{display:flex;gap:32px;margin-top:36px;flex-wrap:wrap}
-.hero-meta div{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500}
-.hero-meta strong{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;color:var(--coral-2);display:block;line-height:1}
+.hero-meta div{display:flex;align-items:flex-start;gap:10px;font-size:14px;font-weight:500}
+.hero-meta div svg{margin-top:3px;flex-shrink:0}
+.hero-meta span{display:flex;flex-direction:column}
+.hero-meta strong{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;color:var(--coral-2);display:block;line-height:1;margin-bottom:2px}
 
 /* Hero visual — dirty/clean window */
 .hero-visual{position:relative;aspect-ratio:1/1.05;max-width:480px;margin-left:auto}
